@@ -3,21 +3,24 @@ import { useMockBlogData } from '../hooks/useMockBlogData';
 import { SliderControls } from './SliderControls';
 import type { Slide } from '../types';
 
+const FADE_DURATION = 1000; // ms
+
 const HeroSlider: React.FC = () => {
   const slides = useMockBlogData();
   const [currentIndex, setCurrentIndex] = useState(0);
-  
   const autoPlayTimerRef = useRef<number | null>(null);
 
-  const clearTimers = useCallback(() => {
-      if (autoPlayTimerRef.current) clearTimeout(autoPlayTimerRef.current);
+  const clearAutoPlay = useCallback(() => {
+    if (autoPlayTimerRef.current) {
+      clearTimeout(autoPlayTimerRef.current);
+    }
   }, []);
-  
+
   const changeSlide = useCallback((newIndex: number) => {
     if (newIndex === currentIndex) return;
-    clearTimers();
+    clearAutoPlay();
     setCurrentIndex(newIndex);
-  }, [currentIndex, clearTimers]);
+  }, [currentIndex, clearAutoPlay]);
 
   const goToPrevious = useCallback(() => {
     const newIndex = currentIndex === 0 ? slides.length - 1 : currentIndex - 1;
@@ -35,8 +38,8 @@ const HeroSlider: React.FC = () => {
   
   useEffect(() => {
     autoPlayTimerRef.current = window.setTimeout(goToNext, 5000);
-    return clearTimers;
-  }, [currentIndex, goToNext, clearTimers]);
+    return clearAutoPlay;
+  }, [currentIndex, goToNext, clearAutoPlay]);
 
 
   if (!slides || slides.length === 0) {
@@ -49,15 +52,13 @@ const HeroSlider: React.FC = () => {
         {slides.map((slide: Slide, slideIndex: number) => {
             const theme = slide.theme || 'dark';
             const isLight = theme === 'light';
-
             const isCurrent = slideIndex === currentIndex;
             
             return (
               <div
                 key={slide.id}
-                className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
-                  isCurrent ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
-                }`}
+                className={`absolute top-0 left-0 w-full h-full transition-opacity ease-in-out ${isCurrent ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+                style={{ transitionDuration: `${FADE_DURATION}ms`}}
                 aria-hidden={!isCurrent}
               >
                 <div
