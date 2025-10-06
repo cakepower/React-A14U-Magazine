@@ -3,36 +3,21 @@ import { useMockBlogData } from '../hooks/useMockBlogData';
 import { SliderControls } from './SliderControls';
 import type { Slide } from '../types';
 
-const ANIMATION_DURATION = 1200; // ms
-
 const HeroSlider: React.FC = () => {
   const slides = useMockBlogData();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [outgoingIndex, setOutgoingIndex] = useState<number | null>(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   
   const autoPlayTimerRef = useRef<number | null>(null);
-  const transitionTimerRef = useRef<number | null>(null);
 
   const clearTimers = useCallback(() => {
       if (autoPlayTimerRef.current) clearTimeout(autoPlayTimerRef.current);
-      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
   }, []);
   
   const changeSlide = useCallback((newIndex: number) => {
-    if (isTransitioning || newIndex === currentIndex) return;
-
+    if (newIndex === currentIndex) return;
     clearTimers();
-    
-    setOutgoingIndex(currentIndex);
     setCurrentIndex(newIndex);
-    setIsTransitioning(true);
-
-    transitionTimerRef.current = window.setTimeout(() => {
-      setIsTransitioning(false);
-      setOutgoingIndex(null);
-    }, ANIMATION_DURATION);
-  }, [currentIndex, isTransitioning, clearTimers]);
+  }, [currentIndex, clearTimers]);
 
   const goToPrevious = useCallback(() => {
     const newIndex = currentIndex === 0 ? slides.length - 1 : currentIndex - 1;
@@ -66,23 +51,14 @@ const HeroSlider: React.FC = () => {
             const isLight = theme === 'light';
 
             const isCurrent = slideIndex === currentIndex;
-            const isOutgoing = slideIndex === outgoingIndex;
-            const isVisible = isCurrent || isOutgoing;
             
-            const animationClass = isCurrent && isTransitioning ? 'animate-circle-reveal' : '';
-
-            let zIndex = 1;
-            if(isCurrent) zIndex = 10;
-            if(isOutgoing) zIndex = 5;
-
             return (
               <div
                 key={slide.id}
-                className={`absolute top-0 left-0 w-full h-full ${animationClass}`}
-                style={{
-                  visibility: isVisible ? 'visible' : 'hidden',
-                  zIndex: zIndex,
-                }}
+                className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
+                  isCurrent ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                }`}
+                aria-hidden={!isCurrent}
               >
                 <div
                   className="w-full h-full bg-cover bg-center"

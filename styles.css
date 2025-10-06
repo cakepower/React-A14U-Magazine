@@ -19,16 +19,3 @@
   src: url('/media/fonts/GmarketSansBold.woff2') format('woff2');
   font-display: swap;
 }
-
-@keyframes circle-reveal {
-  from {
-    clip-path: circle(0% at 16rem 50%);
-  }
-  to {
-    clip-path: circle(150% at 16rem 50%);
-  }
-}
-
-.animate-circle-reveal {
-  animation: circle-reveal 1.2s cubic-bezier(0.7, 0, 0.3, 1) forwards;
-}
