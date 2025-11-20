@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { SearchIcon } from './icons/SearchIcon';
 import { MenuIcon } from './icons/MenuIcon';
 
@@ -12,6 +12,8 @@ const Logo: React.FC = () => (
 
 
 const Header: React.FC = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <header className="absolute top-0 left-0 right-0 z-20 p-8 text-white">
       <div className="container mx-auto grid grid-cols-3 items-center">
@@ -23,9 +25,39 @@ const Header: React.FC = () => {
           <button aria-label="Search" className="text-white hover:text-gray-300 transition-colors">
             <SearchIcon />
           </button>
-          <button aria-label="Menu" className="text-white hover:text-gray-300 transition-colors">
-            <MenuIcon />
-          </button>
+          
+          <div className="relative">
+            <button 
+              aria-label="Menu" 
+              className="text-white hover:text-gray-300 transition-colors focus:outline-none"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <MenuIcon />
+            </button>
+
+            {isMenuOpen && (
+              <div className="absolute right-0 mt-4 w-48 bg-white rounded-md shadow-lg py-2 z-50 animate-fade-in-down">
+                <a 
+                  href="/" 
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-600 transition-colors"
+                >
+                  Home
+                </a>
+                <a 
+                  href="/about" 
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-600 transition-colors"
+                >
+                  About
+                </a>
+                <a 
+                  href="/news" 
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-600 transition-colors"
+                >
+                  News
+                </a>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>
